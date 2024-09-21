@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "Pieces.h"
 
 enum pieces {
     empty = 0,
@@ -11,6 +12,16 @@ enum pieces {
     L = 7
 };
 
+enum piece_sizes {
+    I_SIZE = 4,
+    O_SIZE = 2,
+    T_SIZE = 3,
+    S_SIZE = 3,
+    Z_SIZE = 3,
+    J_SIZE = 3,
+    L_SIZE = 3
+};
+
 enum direction{
     up,
     down,
@@ -19,9 +30,11 @@ enum direction{
 };
 
 
-void create_board(int width, int height, int buffer);
-void place_piece(int x, int y, int8_t piece, int rotation);
-void start_game();
-void move_piece(enum direction direction);
-int* getPiecePos();
+void CreateBoard(int width, int height, int buffer);
+void PlacePiece(int x, int y, int8_t piece, int rotation);
+void SpawnPiece();
+void StartGame();
+void MovePiece(enum direction direction);
+void GenerateBag(int* bag, int starting_pos);
+int* GetPiecePos();
 

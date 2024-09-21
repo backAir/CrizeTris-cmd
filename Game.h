@@ -14,6 +14,7 @@ typedef struct POS{
 void Setup(int width, int height);
 void Play();
 void Move();
+void PrintPiece(int* piece_coords, int count);
 void UpdateScore();
 int* game_to_terminal_coords(int* pos, int amount_of_pos);
 

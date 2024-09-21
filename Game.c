@@ -5,9 +5,6 @@
 
 static int WIDTH;
 static int HEIGHT;
-static Entity player = { YELLOW, '@', 0, 0 };
-static const Entity coin = { YELLOW, '$', 0, 0 };
-static const Entity bomb = { DARKRED, 'o', 0, 0 };
 static bool gameOver = false;
 static int score = 0;
 static char* map;
@@ -43,17 +40,8 @@ void Setup(int width, int height){
     map = (char*)calloc(WIDTH * HEIGHT,sizeof(char));
     srand((unsigned)time(NULL));
     sPrint("Score: 0", 0, HEIGHT);
-    int i;
     
-    // for(i = 0; i < amountOfBombs; i++){
-    //     do{
-    //         rndp.x = rand() % HEIGHT;
-    //         rndp.y = rand() % WIDTH;
-    //     }while(map[rndp.x * WIDTH + rndp.y] != 0);
-    
-    //     map[rndp.x * WIDTH + rndp.y] = bomb.c;
-    //     cColoredPrint(bomb.c, rndp.x, rndp.y, bomb.color);
-    // }
+    // rand() % WIDTH;
 
     int board_pos[] = {5,7};
     int board_height = 20;
@@ -73,21 +61,27 @@ void Setup(int width, int height){
         }
     }
 
-    create_board(board_width, board_height, buffer);
+    srand(time(NULL));
+    CreateBoard(board_width, board_height, buffer);
+    StartGame();
+    SpawnPiece();
+    int* piece_coords = GetPiecePos();
 
+    PrintPiece(piece_coords,4);
+    // int* new_pos = game_to_terminal_coords(piece_coords, 4);
 
-    
-    // for(i = 0; i < amountOfCoins; i++){
-    //     do{
-    //         rndp.x = rand() % HEIGHT;
-    //         rndp.y = rand() % WIDTH;
-    //     }while(map[rndp.x * WIDTH + rndp.y] != 0);
-    
-    //     map[rndp.x * WIDTH + rndp.y] = coin.c;
-    //     cColoredPrint(coin.c, rndp.x, rndp.y, coin.color);
-    // }
-    
+    // cColoredPrint('#', new_pos[0], new_pos[1], YELLOW);
 }
+
+void PrintPiece(int* piece_coords, int count){
+    int* new_pos = game_to_terminal_coords(piece_coords, count);
+    for (size_t i = 0; i < count; i++)
+    {
+        cColoredPrint('#', new_pos[i*2], new_pos[i*2 + 1], YELLOW);
+    }
+}
+
+
 
 void Play(){
     do {
@@ -98,36 +92,47 @@ void Play(){
     sPrint("You've lost!", HEIGHT/2, WIDTH/2-6);
 }
 
+
 void Move(){
     switch(getch()){
         case 77: //right key
-            move_piece(right);
+            MovePiece(right);
         break;
         case 75: //left key
-            move_piece(left);
+            MovePiece(left);
             break;
         case 72: //up key
-            move_piece(up);
+            MovePiece(up);
             break;
         case 80: //down key
-            move_piece(down);
+            MovePiece(down);
             break;
         case 27: //esc key
             gameOver = true;
             return;
     }
-    int* pos = getPiecePos();
+    int* pos = GetPiecePos();
     int* new_pos = game_to_terminal_coords(pos, 1);
 
+    // printf("%d %d\n", new_pos[0], new_pos[1]);
+   
     cColoredPrint('#', new_pos[0], new_pos[1], YELLOW);
 }
 
 int* game_to_terminal_coords(int* pos, int amount_of_pos){
     int* new_pos = (int*)calloc(amount_of_pos*2, sizeof(int));
-    new_pos[0] = pos[0] + 5 + 1;
-    
-    new_pos[1] = -pos[1] + 7 + 20;
-    
+    // int debug[] = {0,0};
+    for (size_t i = 0; i < amount_of_pos; i++)
+    {
+        new_pos[i*2] = (pos[i*2]) + 5 + 1;
+        new_pos[i*2 + 1] = (-pos[i*2 + 1]) + 7 + 20;
+        // debug[0] = new_pos[i*2];
+        // debug[1] = new_pos[i*2 + 1];
+    }
+
+    // new pos to array
+
+
     return new_pos;
 }
 
