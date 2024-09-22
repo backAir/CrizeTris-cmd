@@ -1,4 +1,6 @@
 #include "CrizeTris.h"
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int8_t* board;
@@ -17,7 +19,7 @@ void CreateBoard(int width, int height, int buffer){
     board_height = height;
 }
 
-void StartGame(){
+void StartGame(){ 
     piece_position[0] = 0;
     piece_position[1] = 0;
     GenerateBag(current_bag,0);
@@ -82,36 +84,40 @@ int* GetPiecePos(){
 
     int* piece_pos = malloc(8*sizeof(int)); //4*2 array of piece positions
     int size;
-    const void* piece;
+    const int8_t* piece;
     switch (current_piece)
     {
-        case O:
-            size = O_SIZE;
-            piece = O_PIECE;
-        break;
         case I:
             size = I_SIZE;
-            piece = I_PIECE;
+            piece = (int8_t*) I_PIECE;
+        break;
+        case O:
+            size = O_SIZE;
+            piece = (int8_t*) O_PIECE;
         break;
         case T:
             size = T_SIZE;
-            piece = T_PIECE;
+            piece = (int8_t*) T_PIECE;
         break;
         case S:
             size = S_SIZE;
-            piece = S_PIECE;
+            piece = (int8_t*) S_PIECE;
         break;
         case Z:
             size = Z_SIZE;
-            piece = Z_PIECE;
+            piece = (int8_t*) Z_PIECE;
         break;
         case J:
             size = J_SIZE;
-            piece = J_PIECE;
+            piece = (int8_t*) J_PIECE;
         break;
         case L:
             size = L_SIZE;
-            piece = L_PIECE;
+            piece = (int8_t*) L_PIECE;
+        break;
+        default:
+            printf("Error: Invalid piece type\n");
+            exit(EXIT_FAILURE);
         break;
     }
 
@@ -121,7 +127,7 @@ int* GetPiecePos(){
     {
         for (size_t j = 0; j < size; j++)
         {
-            if (((char (*))piece)[(current_rotation*size*size)*size + J]==1)
+            if (piece[(current_rotation*size*size)*size + J]==1)
             {
                 piece_pos[pice_count*2] = piece_position[J] + i;
                 piece_pos[pice_count*2 + 1] = size-piece_position[J] + j;
