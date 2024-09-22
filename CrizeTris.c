@@ -41,7 +41,8 @@ void SpawnPiece(){
 }
 
 void GenerateBag(int* bag, int starting_pos){
-    int new_bag[] = {1,2,3,4,5,6,7};
+    srand(84787);
+    int new_bag[] = {1,1,1,1,1,1,1};
 
     for (int i = 0; i < 7; i++)
     {
@@ -52,12 +53,11 @@ void GenerateBag(int* bag, int starting_pos){
             new_bag[j] = new_bag[j+1]; 
         }
     }
-    // for (size_t i = 0; i < 7; i++)
-    // {
-    //     new_bag[i] = bag[i];
-    // }
-    // printf("");
-    
+    for (size_t i = 0; i < 7; i++)
+    {
+        new_bag[i] = bag[i];
+    }
+    (void)new_bag;    
 }
 
 void MovePiece(enum direction direction){

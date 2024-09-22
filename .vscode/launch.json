@@ -5,13 +5,11 @@
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
-      "args": [
-        "./"
-      ],
+      "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/antho/Documents/GitHub/CrizeTris-cmd",
-      "program": "c:/Users/antho/Documents/GitHub/CrizeTris-cmd/build/Debug/outDebug",
+      "cwd": "c:/Users/tonyl/Downloads/GameExample-main/GameExample-main/Windows/CrizeTris-cmd",
+      "program": "c:/Users/tonyl/Downloads/GameExample-main/GameExample-main/Windows/CrizeTris-cmd/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

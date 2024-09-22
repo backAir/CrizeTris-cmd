@@ -120,7 +120,7 @@ void Move(){
 }
 
 int* game_to_terminal_coords(int* pos, int amount_of_pos){
-    int* new_pos = (int*)calloc(amount_of_pos*2, sizeof(int));
+    int* new_pos = malloc(amount_of_pos*2*sizeof(int));
     // int debug[] = {0,0};
     for (size_t i = 0; i < amount_of_pos; i++)
     {

@@ -3,12 +3,17 @@
 #include "External.h"
 #include "Game.h"
 
+#ifdef TEST
+#include "test.h"
+int main(int argc, char *argv[]) {
+    test();
+    return 0;
+}
 
-
-
+#else
 
 int main(int argc, char *argv[]) {
-    // srand(time( NULL));
+    // int i = time(NULL);
     
     // free(bag);
     Setup(70,40);
@@ -16,3 +21,8 @@ int main(int argc, char *argv[]) {
     getch();
     return 0;
 }
+
+#endif
+
+
+

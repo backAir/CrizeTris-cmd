@@ -5,12 +5,12 @@
       "includePath": [
         "${workspaceFolder}/**"
       ],
-      "compilerPath": "C:/ProgramData/mingw64/mingw64/bin/gcc.exe",
+      "compilerPath": "C:/Users/tonyl/Documents/Strawberry_Perl/c/bin/gcc.exe",
       "cStandard": "${default}",
       "cppStandard": "${default}",
       "intelliSenseMode": "windows-gcc-x64",
       "compilerArgs": [
-        "-w"
+        ""
       ]
     }
   ],
