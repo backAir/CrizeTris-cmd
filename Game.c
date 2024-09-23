@@ -85,6 +85,7 @@ void PrintPiece(int* piece_coords, int count){
 
 void Play(){
     do {
+        Sleep(1000/60);
         Move();
     } while(!gameOver);
     
@@ -94,23 +95,44 @@ void Play(){
 
 
 void Move(){
-    switch(getch()){
-        case 77: //right key
-            MovePiece(right);
-        break;
-        case 75: //left key
-            MovePiece(left);
-            break;
-        case 72: //up key
-            MovePiece(up);
-            break;
-        case 80: //down key
-            MovePiece(down);
-            break;
-        case 27: //esc key
-            gameOver = true;
-            return;
+    // switch(getch()){
+    //     case 77: //right key
+    //         MovePiece(right);
+    //     break;
+    //     case 75: //left key
+    //         MovePiece(left);
+    //         break;
+    //     case 72: //up key
+    //         MovePiece(up);
+    //         break;
+    //     case 80: //down key
+    //         MovePiece(down);
+       //         break;
+    //     case 27: //esc key
+    //         gameOver = true;
+    //         return;
+    // }
+
+    if(GetKeyState(VK_ESCAPE)&0x8000){
+        gameOver = true;
+        return;
     }
+    
+
+    if(GetKeyState(VK_RIGHT)&0x8000){
+        MovePiece(right);
+    }
+    if(GetKeyState(VK_LEFT)&0x8000){
+        MovePiece(left);
+    }
+    if(GetKeyState(VK_UP)&0x8000){
+        MovePiece(up);
+    }
+    if(GetKeyState(VK_DOWN)&0x8000){
+        MovePiece(down);
+    }
+
+    
     int* pos = GetPiecePos();
     int* new_pos = game_to_terminal_coords(pos, 1);
 
