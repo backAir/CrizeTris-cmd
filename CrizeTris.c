@@ -29,8 +29,8 @@ void StartGame(){
 void SpawnPiece(){
     current_piece = current_bag[0];
     current_rotation = 0;
-    piece_position[0] = 4;
-    piece_position[1] = 20;
+    // piece_position[0] = 4;
+    // piece_position[1] = 20;
     bag_position++;
     for (size_t i = 0; i < 13; i++)
     {
@@ -129,19 +129,21 @@ int* GetPiecePos(){
             if (piece[(current_rotation*size*size)+x+y*size]==1)
             {
                 piece_pos[pice_count*2] = piece_position[0] + x;
-                piece_pos[pice_count*2 + 1] = piece_position[1] - y;
+                piece_pos[pice_count*2 + 1] = piece_position[1] + size - y - 1;
                 pice_count++;
             }
         }
     }
-    int debug[4][2];
-    for (size_t i = 0; i < 4; i++)
-    {
-        debug[i][0] = piece_pos[i*2];
-        debug[i][1] = piece_pos[i*2 + 1];
-    }
-    (void) debug;
-   
+    #ifdef DEBUG
+        int debug[4][2];
+        for (size_t i = 0; i < 4; i++)
+        {
+            debug[i][0] = piece_pos[i*2];
+            debug[i][1] = piece_pos[i*2 + 1];
+        }
+        (void) debug;
+   #endif
+
     return piece_pos;
 };
 

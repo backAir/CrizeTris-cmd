@@ -13,7 +13,14 @@ int test() {
     StartGame();
     SpawnPiece();
     int* piece_coords = GetPiecePos();
-    printf("lol");
+
     // PrintPiece(piece_coords,4);
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        printf("%d %d\n", piece_coords[i*2], piece_coords[i*2+1]);
+    
+    }
+
     return 0;
 }
