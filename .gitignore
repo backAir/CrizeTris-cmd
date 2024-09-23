@@ -1,5 +1,6 @@
 # Ignore build directory
 build/
+.vscode/
 
 # Ignore object files
 *.o

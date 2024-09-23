@@ -43,8 +43,7 @@ void SpawnPiece(){
 }
 
 void GenerateBag(int* bag, int starting_pos){
-    srand(84787);
-    int new_bag[] = {1,1,1,1,1,1,1};
+    int new_bag[] = {1,2,3,4,5,6,7};
 
     for (int i = 0; i < 7; i++)
     {
@@ -123,14 +122,14 @@ int* GetPiecePos(){
 
 
     int pice_count = 0;
-    for (size_t i = 0; i < size; i++)
+    for (size_t x = 0; x < size; x++)
     {
-        for (size_t j = 0; j < size; j++)
+        for (size_t y = 0; y < size; y++)
         {
-            if (piece[(current_rotation*size*size)*size + J]==1)
+            if (piece[(current_rotation*size*size)+x+y*size]==1)
             {
-                piece_pos[pice_count*2] = piece_position[J] + i;
-                piece_pos[pice_count*2 + 1] = size-piece_position[J] + j;
+                piece_pos[pice_count*2] = piece_position[0] + x;
+                piece_pos[pice_count*2 + 1] = piece_position[1] - y;
                 pice_count++;
             }
         }
