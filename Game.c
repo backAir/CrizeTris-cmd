@@ -9,7 +9,7 @@ static bool gameOver = false;
 static int score = 0;
 static char* map;
 
-
+int* last_piece_pos;
 
 // Function to set the console font
 void SetConsoleFont(const wchar_t* fontName, int fontSize) {
@@ -62,22 +62,34 @@ void Setup(int width, int height){
     }
 
     srand(time(NULL));
+
+    last_piece_pos = calloc(8,sizeof(int));
     CreateBoard(board_width, board_height, buffer);
     StartGame();
     SpawnPiece();
     int* piece_coords = GetPiecePos();
-
     PrintPiece(piece_coords,4);
+
     // int* new_pos = game_to_terminal_coords(piece_coords, 4);
 
     // cColoredPrint('#', new_pos[0], new_pos[1], YELLOW);
 }
 
+
+
 void PrintPiece(int* piece_coords, int count){
+    
     int* new_pos = game_to_terminal_coords(piece_coords, count);
     for (size_t i = 0; i < count; i++)
     {
+        cColoredPrint(' ',last_piece_pos[i*2], last_piece_pos[i*2 + 1], YELLOW);
+    }
+    
+    for (size_t i = 0; i < count; i++)
+    {
         cColoredPrint('#', new_pos[i*2], new_pos[i*2 + 1], YELLOW);
+        last_piece_pos[i*2] = new_pos[i*2];
+        last_piece_pos[i*2 + 1] = new_pos[i*2 + 1];
     }
 }
 
@@ -133,12 +145,15 @@ void Move(){
     }
 
     
-    int* pos = GetPiecePos();
-    int* new_pos = game_to_terminal_coords(pos, 1);
+    // int* pos = GetPiecePos();
+    // int* new_pos = game_to_terminal_coords(pos, 1);
+
+    int* piece_coords = GetPiecePos();
+    PrintPiece(piece_coords,4);
 
     // printf("%d %d\n", new_pos[0], new_pos[1]);
    
-    cColoredPrint('#', new_pos[0], new_pos[1], YELLOW);
+    // cColoredPrint('#', new_pos[0], new_pos[1], YELLOW);
 }
 
 int* game_to_terminal_coords(int* pos, int amount_of_pos){
