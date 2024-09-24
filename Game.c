@@ -1,5 +1,7 @@
 #include "Game.h"
 #include "External.h"
+#include <minwindef.h>
+#include <stdint.h>
 #include <time.h>
 #include "CrizeTris.h"
 
@@ -106,44 +108,38 @@ void Play(){
 }
 
 
-void Move(){
-    // switch(getch()){
-    //     case 77: //right key
-    //         MovePiece(right);
-    //     break;
-    //     case 75: //left key
-    //         MovePiece(left);
-    //         break;
-    //     case 72: //up key
-    //         MovePiece(up);
-    //         break;
-    //     case 80: //down key
-    //         MovePiece(down);
-       //         break;
-    //     case 27: //esc key
-    //         gameOver = true;
-    //         return;
-    // }
 
+typedef struct {
+    int virtualKey;
+    int moveFlag;
+} KeyMapping;
+
+KeyMapping keyMappings[] = {
+    {VK_ESCAPE, 0}, // Special case for gameOver
+    {VK_RIGHT, KEY_RIGHT},
+    {VK_LEFT, KEY_LEFT},
+    {VK_UP, KEY_UP},
+    {VK_DOWN, KEY_DOWN},
+    {VK_SPACE, KEY_HARDDROP},
+    {'W', KEY_ROTATECCW},
+    {'X', KEY_ROTATECW},
+    {'C', KEY_HOLD},
+    {'Q', KEY_180}
+};
+
+void Move(){
+    int16_t input = 0;
     if(GetKeyState(VK_ESCAPE)&0x8000){
         gameOver = true;
         return;
     }
-    
-
-    if(GetKeyState(VK_RIGHT)&0x8000){
-        MovePiece(right);
-    }
-    if(GetKeyState(VK_LEFT)&0x8000){
-        MovePiece(left);
-    }
-    if(GetKeyState(VK_UP)&0x8000){
-        MovePiece(up);
-    }
-    if(GetKeyState(VK_DOWN)&0x8000){
-        MovePiece(down);
+    for (int i = 0; i < sizeof(keyMappings) / sizeof(KeyMapping); i++) {
+        if (GetKeyState(keyMappings[i].virtualKey) & 0x8000) {
+            input |= keyMappings[i].moveFlag;
+        }
     }
 
+    GameLoop(input);
     
     // int* pos = GetPiecePos();
     // int* new_pos = game_to_terminal_coords(pos, 1);

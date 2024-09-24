@@ -61,23 +61,51 @@ void GenerateBag(int* bag, int starting_pos){
     (void)new_bag;    
 }
 
+
+
+int lastInput = 0;
+void GameLoop(int16_t input){
+    int pressedInput = input & ~lastInput;
+    int heldInput = input & lastInput;
+
+    if(pressedInput & KEY_RIGHT){
+        MovePiece(right);
+    }
+    if(pressedInput & KEY_LEFT){
+        MovePiece(left);
+    }
+    if((pressedInput|heldInput) & KEY_DOWN ){
+        MovePiece(down);
+    }
+    // if(pressedInput & KEY_UP){
+    //     MovePiece(up);
+    // }
+    lastInput = input;
+}
+
 void MovePiece(enum direction direction){
+    int new_position[] = {piece_position[0],piece_position[1]};
+    
     switch (direction) {
         case up:
-            piece_position[1] += 1;
+            new_position[1] += 1;
             break;
         case down:
-            piece_position[1] -= 1;
+            new_position[1] -= 1;
             break;
         case left:
-            piece_position[0] -= 1;
+            new_position[0] -= 1;
             break;
         case right:
-            piece_position[0] += 1;
+            new_position[0] += 1;
             break;
     }
 
+    piece_position[0] = new_position[0];
+    piece_position[1] = new_position[1];
+
 }
+
 
 int* GetPiecePos(){
 
@@ -146,6 +174,9 @@ int* GetPiecePos(){
 
     return piece_pos;
 };
+
+
+
 
 void PlacePiece(int x, int y, int8_t piece, int rotation){
     switch (piece) {
