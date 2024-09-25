@@ -115,3 +115,38 @@ bool IsLegalPosition(int x, int y, int8_t piece, int rotation, int8_t* board, in
     }
     return true;
 }
+
+
+int ClearLines(int8_t* board){
+
+    int board_width = 10;
+    int board_height = 40;
+    int lines_cleared = 0;
+
+    for (size_t i = 0; i < board_height; i++)
+    {
+        bool line_full = true;
+        for (size_t j = 0; j < board_width; j++)
+        {
+            if(board[j+i*board_width] == 0){
+                line_full = false;
+                break;
+            }
+        }
+        if(line_full){
+            lines_cleared++;
+            for (size_t j = i; j < board_height-1; j++)
+            {
+                for (size_t k = 0; k < board_width; k++)
+                {
+                    board[k+j*board_width] = board[k+(j+1)*board_width];
+                }
+            }
+            for (size_t j = 0; j < board_width; j++)
+            {
+                board[j+(board_height-1)*board_width] = 0;
+            }
+        }
+    }
+    return lines_cleared;
+}

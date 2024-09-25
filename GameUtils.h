@@ -49,3 +49,4 @@ PieceInfo getPieceInfo(int piece);
 int* GetPiecePos(int x, int y, int rotation, int piece);
 int* GetCurrentPiecePos();
 bool IsLegalPosition(int x, int y, int8_t piece, int rotation, int8_t* board, int board_width);
+int ClearLines(int8_t* board);

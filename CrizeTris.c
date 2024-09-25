@@ -1,6 +1,8 @@
 #include "CrizeTris.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <time.h>
+
 
 int8_t* board;
 int board_width;
@@ -18,18 +20,31 @@ void CreateBoard(int width, int height, int buffer){
     board_height = height;
 }
 
+int timeSinceLastDrop = 0;
+int lastInput = 0;
 void StartGame(){ 
+    timeSinceLastDrop = clock();
     piece_position[0] = 0;
     piece_position[1] = 0;
     GenerateBag(current_bag,0);
     GenerateBag(current_bag,7);
 }
 
-int lastInput = 0;
+
+const int DROP_INTERVAL = 250; // 1/4th of a second in milliseconds
 bool GameLoop(int16_t input){
     int pressedInput = input & ~lastInput;
     int heldInput = input & lastInput;
     bool piece_was_placed = false;
+
+
+
+    int currentTime = clock();
+    if ((currentTime - timeSinceLastDrop) * 1000 / CLOCKS_PER_SEC >= DROP_INTERVAL) {
+        MovePiece(down);
+        timeSinceLastDrop = currentTime;
+    }
+
     if(pressedInput& KEY_ROTATECW){
         RotatePiece(clockwise);
     }
@@ -45,8 +60,9 @@ bool GameLoop(int16_t input){
     if(pressedInput & KEY_UP){
         MovePiece(up);
     }
-    if(pressedInput & KEY_DOWN ){
+    if(input & KEY_DOWN ){
         piece_was_placed = MovePiece(down);
+        timeSinceLastDrop = currentTime;
     }
     lastInput = input;
     return piece_was_placed;
@@ -67,6 +83,8 @@ void SpawnPiece(){
         bag_position=0;
     }
 }
+
+
 
 bool MovePiece(enum direction direction){
     int new_position[] = {piece_position[0],piece_position[1]};
@@ -130,4 +148,7 @@ void PlacePiece(int x, int y, int8_t piece, int rotation){
     {
         board[piece_pos[i*2] + piece_pos[i*2 + 1] * board_width] = piece;
     }
+    free(piece_pos);
+
+    ClearLines(board);
 }
