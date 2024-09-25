@@ -37,6 +37,7 @@ void Setup(int width, int height){
     ShowsCursor(false);
     SetConsoleTitle("CrizeTris cmd");
 
+    SetConsoleOutputCP(CP_UTF8);
     SetConsoleFont(L"Lucida Console", 16); //Consolas work too
 
     map = (char*)calloc(WIDTH * HEIGHT,sizeof(char));
@@ -54,11 +55,11 @@ void Setup(int width, int height){
         for (size_t j = 0; j < height; j++)
         {
             if((i==board_pos[0]||i==board_pos[0]+board_width+1)&&j>board_pos[1]&&j<board_pos[1]+board_height+2){
-                sColoredPrint("O", i, j, WHITE);
+                sColoredPrint("█", i, j, WHITE);
             }
 
             if(j==board_pos[1]+1+board_height && (i>board_pos[0] && i<board_pos[0]+board_width+1)){
-                sColoredPrint("O", i, j, WHITE);
+                sColoredPrint("█", i, j, WHITE);
             }
         }
     }
@@ -69,8 +70,8 @@ void Setup(int width, int height){
     CreateBoard(board_width, board_height, buffer);
     StartGame();
     SpawnPiece();
-    int* piece_coords = GetPiecePos();
-    PrintPiece(piece_coords,4);
+    int* piece_coords = GetCurrentPiecePos();
+    PrintPiece(piece_coords,4,false);
 
     // int* new_pos = game_to_terminal_coords(piece_coords, 4);
 
@@ -79,20 +80,23 @@ void Setup(int width, int height){
 
 
 
-void PrintPiece(int* piece_coords, int count){
+void PrintPiece(int* piece_coords, int count, bool placed_piece){
     
     int* new_pos = game_to_terminal_coords(piece_coords, count);
-    for (size_t i = 0; i < count; i++)
-    {
-        cColoredPrint(' ',last_piece_pos[i*2], last_piece_pos[i*2 + 1], YELLOW);
+    if(!placed_piece){
+        for (size_t i = 0; i < count; i++)
+        {
+            cColoredPrint(' ',last_piece_pos[i*2], last_piece_pos[i*2 + 1], YELLOW);
+        }
     }
     
     for (size_t i = 0; i < count; i++)
     {
-        cColoredPrint('#', new_pos[i*2], new_pos[i*2 + 1], YELLOW);
+        sColoredPrint("█", new_pos[i*2], new_pos[i*2 + 1], YELLOW);
         last_piece_pos[i*2] = new_pos[i*2];
         last_piece_pos[i*2 + 1] = new_pos[i*2 + 1];
     }
+
 }
 
 
@@ -139,17 +143,10 @@ void Move(){
         }
     }
 
-    GameLoop(input);
-    
-    // int* pos = GetPiecePos();
-    // int* new_pos = game_to_terminal_coords(pos, 1);
+    bool piece_was_placed = GameLoop(input);
+    int* piece_coords = GetCurrentPiecePos();
+    PrintPiece(piece_coords,4,piece_was_placed);
 
-    int* piece_coords = GetPiecePos();
-    PrintPiece(piece_coords,4);
-
-    // printf("%d %d\n", new_pos[0], new_pos[1]);
-   
-    // cColoredPrint('#', new_pos[0], new_pos[1], YELLOW);
 }
 
 int* game_to_terminal_coords(int* pos, int amount_of_pos){
