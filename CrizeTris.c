@@ -13,6 +13,7 @@ int current_bag[] = {[13] = 0};
 int bag_position = 0;
 int current_rotation = 0;
 int piece_position[] = {0,0};
+bool piece_is_placed = false;
 
 void CreateBoard(int width, int height, int buffer){
     board = calloc(width * (height+buffer), sizeof(int8_t));
@@ -37,13 +38,11 @@ bool GameLoop(int16_t input){
     int heldInput = input & lastInput;
     bool piece_was_placed = false;
 
-
-
-    int currentTime = clock();
-    if ((currentTime - timeSinceLastDrop) * 1000 / CLOCKS_PER_SEC >= DROP_INTERVAL) {
-        MovePiece(down);
-        timeSinceLastDrop = currentTime;
+    if(piece_is_placed){
+        SpawnPiece();
     }
+
+
 
     if(pressedInput& KEY_ROTATECW){
         RotatePiece(clockwise);
@@ -60,15 +59,23 @@ bool GameLoop(int16_t input){
     if(pressedInput & KEY_UP){
         MovePiece(up);
     }
-    if(input & KEY_DOWN ){
+
+    int currentTime = clock();
+    if (
+        (input & KEY_DOWN) ||
+        ((currentTime - timeSinceLastDrop) * 1000 / CLOCKS_PER_SEC >= DROP_INTERVAL)
+    ) {
         piece_was_placed = MovePiece(down);
         timeSinceLastDrop = currentTime;
     }
+
+
     lastInput = input;
     return piece_was_placed;
 }
 
 void SpawnPiece(){
+    piece_is_placed = false;
     current_piece = current_bag[0];
     current_rotation = 0;
     piece_position[0] = 4;
@@ -83,6 +90,7 @@ void SpawnPiece(){
         bag_position=0;
     }
 }
+
 
 
 
@@ -109,7 +117,6 @@ bool MovePiece(enum direction direction){
         piece_position[1] = new_position[1];
     }else if(direction == down){
         PlacePiece(piece_position[0],piece_position[1],current_piece,current_rotation);
-        SpawnPiece();
         return true;
     }
     return false;
@@ -151,4 +158,10 @@ void PlacePiece(int x, int y, int8_t piece, int rotation){
     free(piece_pos);
 
     ClearLines(board);
+    piece_is_placed = true;
+}
+
+
+int8_t* GetCurrBoard(){
+    return board;
 }

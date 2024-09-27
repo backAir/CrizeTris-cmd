@@ -21,3 +21,4 @@ void StartGame();
 bool MovePiece(enum direction direction);
 bool GameLoop(int16_t input);
 void RotatePiece(enum rotations rotation);
+int8_t* GetCurrBoard();

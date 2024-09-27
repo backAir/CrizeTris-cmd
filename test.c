@@ -12,7 +12,7 @@
 //     CreateBoard(board_width, board_height, buffer);
 //     StartGame();
 //     SpawnPiece();
-//     int* piece_coords = GetPiecePos();
+//     int* piece_coords = GetCurrentPiecePos();
 
 //     // PrintPiece(piece_coords,4);
 
@@ -27,10 +27,10 @@
 
 
 
-// int main(int argc, char *argv[]) {
-//     int i = time(NULL);
+// // int main(int argc, char *argv[]) {
+// //     int i = time(NULL);
 
 
-//     whit
+// //     whit
     
-// }
+// // }

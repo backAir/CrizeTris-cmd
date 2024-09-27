@@ -6,9 +6,12 @@
 #include "External.h"
 #include <time.h>
 
+
+
+
 typedef struct POS{
-    int8_t y;
-    int8_t x;
+    int y;
+    int x;
 }POS;
 
 void Setup(int width, int height);
@@ -17,5 +20,7 @@ void Move();
 void PrintPiece(int* piece_coords, int count, bool placed_piece);
 void UpdateScore();
 int* game_to_terminal_coords(int* pos, int amount_of_pos);
+POS game_to_terminal_coord(struct POS pos);
+void PrintBoard(int8_t* board, int board_width, int board_height);
 
 #endif

@@ -10,6 +10,8 @@ static int HEIGHT;
 static bool gameOver = false;
 static int score = 0;
 static char* map;
+int board_pos[] = {5,10};
+
 
 int* last_piece_pos;
 
@@ -28,6 +30,7 @@ void SetConsoleFont(const wchar_t* fontName, int fontSize) {
 }
 
 
+
 void Setup(int width, int height){
     WIDTH = width;
     HEIGHT = height;
@@ -44,12 +47,11 @@ void Setup(int width, int height){
     srand((unsigned)time(NULL));
     sPrint("Score: 0", 0, HEIGHT);
     
-    // rand() % WIDTH;
-
-    int board_pos[] = {5,7};
+        // rand() % WIDTH;
     int board_height = 20;
     int board_width = 10;
     int buffer = 20;
+
     for (size_t i = 0; i < width; i++)
     {
         for (size_t j = 0; j < height; j++)
@@ -80,31 +82,21 @@ void Setup(int width, int height){
 
 
 
-void PrintPiece(int* piece_coords, int count, bool placed_piece){
-    
-    int* new_pos = game_to_terminal_coords(piece_coords, count);
-    if(!placed_piece){
-        for (size_t i = 0; i < count; i++)
-        {
-            cColoredPrint(' ',last_piece_pos[i*2], last_piece_pos[i*2 + 1], YELLOW);
-        }
-    }
-    
-    for (size_t i = 0; i < count; i++)
-    {
-        sColoredPrint("█", new_pos[i*2], new_pos[i*2 + 1], YELLOW);
-        last_piece_pos[i*2] = new_pos[i*2];
-        last_piece_pos[i*2 + 1] = new_pos[i*2 + 1];
-    }
 
-}
 
 
 
 void Play(){
     do {
-        Sleep(1000/60);
+        clock_t start_time = clock();
         Move();
+        clock_t end_time = clock();
+        double runtime = (double)(end_time - start_time) / CLOCKS_PER_SEC * 1000; // Convert to milliseconds
+        double sleep_time = (1000.0 / 60.0) - runtime;
+        if (sleep_time > 0) {
+            Sleep((DWORD)sleep_time);
+        } 
+
     } while(!gameOver);
     
     free(map);
@@ -145,17 +137,74 @@ void Move(){
 
     bool piece_was_placed = GameLoop(input);
     int* piece_coords = GetCurrentPiecePos();
-    PrintPiece(piece_coords,4,piece_was_placed);
+    int8_t* board = GetCurrBoard();
+    PrintBoard(board, 10, 20);
+    // PrintPiece(piece_coords,4,piece_was_placed);
 
 }
+
+
+int8_t* old_board = NULL;
+void PrintBoard(int8_t* board, int board_width, int board_height){
+    if (old_board == NULL) {
+        old_board = (int8_t*)malloc(board_width * board_height * sizeof(int8_t));
+        memcpy(old_board, board, board_width * board_height * sizeof(int8_t));
+    }
+    for (size_t i = 0; i < board_width; i++)
+    {
+        for (size_t j = 0; j < board_height; j++)
+        {
+            int index = i + j * board_width;
+
+            if (board[index] != old_board[index]) {
+                POS pos = {i,j};
+                pos = game_to_terminal_coord(pos);
+                if(board[index] != 0){
+                    sColoredPrint("█", pos.x, pos.y, YELLOW);
+                }else{
+                    cColoredPrint(' ', pos.x, pos.y, YELLOW);
+                }
+            }
+        }
+    }
+}
+
+
+
+
+bool last_was_placed = false;
+void PrintPiece(int* piece_coords, int count, bool placed_piece){
+    int* new_pos = game_to_terminal_coords(piece_coords, count);
+    if(!last_was_placed){
+        for (size_t i = 0; i < count; i++)
+        {
+            cColoredPrint(' ',last_piece_pos[i*2], last_piece_pos[i*2 + 1], YELLOW);
+        }
+    }
+    
+    for (size_t i = 0; i < count; i++)
+    {
+        sColoredPrint("█", new_pos[i*2], new_pos[i*2 + 1], YELLOW);
+        last_piece_pos[i*2] = new_pos[i*2];
+        last_piece_pos[i*2 + 1] = new_pos[i*2 + 1];
+    }
+    free(new_pos);
+    last_was_placed = placed_piece;
+}
+
+struct POS game_to_terminal_coord(struct POS pos){
+    struct POS new_pos = {pos.x + board_pos[0] + 1, -pos.y + board_pos[1] + 20};
+    return new_pos;
+}
+
 
 int* game_to_terminal_coords(int* pos, int amount_of_pos){
     int* new_pos = malloc(amount_of_pos*2*sizeof(int));
     // int debug[] = {0,0};
     for (size_t i = 0; i < amount_of_pos; i++)
     {
-        new_pos[i*2] = (pos[i*2]) + 5 + 1;
-        new_pos[i*2 + 1] = (-pos[i*2 + 1]) + 7 + 20;
+        new_pos[i*2] = (pos[i*2]) + board_pos[0] + 1;
+        new_pos[i*2 + 1] = (-pos[i*2 + 1]) + board_pos[1] + 20;
         // debug[0] = new_pos[i*2];
         // debug[1] = new_pos[i*2 + 1];
     }
