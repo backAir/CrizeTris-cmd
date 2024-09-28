@@ -15,6 +15,8 @@ int board_pos[] = {5,10};
 
 int* last_piece_pos;
 
+
+int8_t* new_board;
 // Function to set the console font
 void SetConsoleFont(const wchar_t* fontName, int fontSize) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -67,6 +69,7 @@ void Setup(int width, int height){
     }
 
     srand(time(NULL));
+    new_board = malloc(10*40*sizeof(int8_t));
 
     last_piece_pos = calloc(8,sizeof(int));
     CreateBoard(board_width, board_height, buffer);
@@ -123,6 +126,7 @@ KeyMapping keyMappings[] = {
     {'Q', KEY_180}
 };
 
+
 void Move(){
     int16_t input = 0;
     if(GetKeyState(VK_ESCAPE)&0x8000){
@@ -137,36 +141,48 @@ void Move(){
 
     bool piece_was_placed = GameLoop(input);
     int* piece_coords = GetCurrentPiecePos();
+    // if(!piece_was_placed){
+    //     // PrintPiece(piece_coords,4,piece_was_placed);
+    // }
     int8_t* board = GetCurrBoard();
-    PrintBoard(board, 10, 20);
-    // PrintPiece(piece_coords,4,piece_was_placed);
 
+    memcpy(new_board, board, 10*40*sizeof(int8_t));
+    for (size_t i = 0; i < 4; i++)
+    {
+        new_board[piece_coords[i*2] + piece_coords[i*2 + 1] * 10] = 1;
+    }
+    PrintBoard(new_board, 10, 20, 20);
 }
 
 
 int8_t* old_board = NULL;
-void PrintBoard(int8_t* board, int board_width, int board_height){
+void PrintBoard(int8_t* board, int board_width, int board_height, int board_buffer){
     if (old_board == NULL) {
-        old_board = (int8_t*)malloc(board_width * board_height * sizeof(int8_t));
-        memcpy(old_board, board, board_width * board_height * sizeof(int8_t));
+        old_board = (int8_t*)calloc(board_width * (board_buffer+board_height), sizeof(int8_t));
+        // memcpy(old_board, board, board_width * board_height * sizeof(int8_t));
     }
+    
     for (size_t i = 0; i < board_width; i++)
     {
-        for (size_t j = 0; j < board_height; j++)
+        for (size_t j = 0; j < board_height+board_buffer; j++)
         {
             int index = i + j * board_width;
-
             if (board[index] != old_board[index]) {
-                POS pos = {i,j};
-                pos = game_to_terminal_coord(pos);
+                // POS pos = {i,j};
+                // pos = game_to_terminal_coord(pos);
+                int pos[] = {i,j};
+                int* new_pos = game_to_terminal_coords(pos, 1); 
                 if(board[index] != 0){
-                    sColoredPrint("█", pos.x, pos.y, YELLOW);
+                    sColoredPrint("█", new_pos[0], new_pos[1], YELLOW);
                 }else{
-                    cColoredPrint(' ', pos.x, pos.y, YELLOW);
+                    sColoredPrint(" ", new_pos[0], new_pos[1], YELLOW);
                 }
+                free(new_pos);
             }
         }
     }
+    memcpy(old_board, board, board_width * (board_buffer+board_height) * sizeof(int8_t));
+
 }
 
 
@@ -193,7 +209,7 @@ void PrintPiece(int* piece_coords, int count, bool placed_piece){
 }
 
 struct POS game_to_terminal_coord(struct POS pos){
-    struct POS new_pos = {pos.x + board_pos[0] + 1, -pos.y + board_pos[1] + 20};
+    struct POS new_pos = {pos.x + board_pos[0] + 1, (-pos.y) + board_pos[1] + 20};
     return new_pos;
 }
 

@@ -146,6 +146,7 @@ int ClearLines(int8_t* board){
             {
                 board[j+(board_height-1)*board_width] = 0;
             }
+            i--;
         }
     }
     return lines_cleared;

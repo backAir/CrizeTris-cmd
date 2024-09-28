@@ -38,9 +38,7 @@ bool GameLoop(int16_t input){
     int heldInput = input & lastInput;
     bool piece_was_placed = false;
 
-    if(piece_is_placed){
-        SpawnPiece();
-    }
+
 
 
 
@@ -158,6 +156,7 @@ void PlacePiece(int x, int y, int8_t piece, int rotation){
     free(piece_pos);
 
     ClearLines(board);
+    SpawnPiece();
     piece_is_placed = true;
 }
 
