@@ -17,8 +17,7 @@ void GenerateBag(int* bag, int starting_pos){
     {
         new_bag[i] = bag[i];
     }
-    (void)new_bag;    
-
+    (void)new_bag;
 }
 
 PieceInfo getPieceInfo(int piece) {

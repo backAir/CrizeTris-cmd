@@ -1,9 +1,5 @@
 #include "Game.h"
-#include "External.h"
-#include <minwindef.h>
-#include <stdint.h>
-#include <time.h>
-#include "CrizeTris.h"
+
 
 static int WIDTH;
 static int HEIGHT;
@@ -43,6 +39,9 @@ void Setup(int width, int height){
     SetConsoleTitle("CrizeTris cmd");
 
     SetConsoleOutputCP(CP_UTF8);
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
     SetConsoleFont(L"Lucida Console", 16); //Consolas work too
 
     map = (char*)calloc(WIDTH * HEIGHT,sizeof(char));
@@ -85,12 +84,26 @@ void Setup(int width, int height){
 
 
 
+// void DisableEchoInput() {
+//     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+//     DWORD mode;
+//     GetConsoleMode(hStdin, &mode);
+//     mode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
+//     SetConsoleMode(hStdin, mode);
+// }
 
+void ClearInputBuffer() {
+    while (_kbhit()) {
+        ; // Read and discard character
+        _getch();
 
+    }
+}
 
 
 void Play(){
     do {
+        ClearInputBuffer();
         clock_t start_time = clock();
         Move();
         clock_t end_time = clock();
@@ -139,7 +152,10 @@ void Move(){
         }
     }
 
-    bool piece_was_placed = GameLoop(input);
+    int game_loop_return = GameLoop(input);
+    if(game_loop_return==-1){
+        gameOver = true;
+    }
     int* piece_coords = GetCurrentPiecePos();
     // if(!piece_was_placed){
     //     // PrintPiece(piece_coords,4,piece_was_placed);
@@ -208,8 +224,8 @@ void PrintPiece(int* piece_coords, int count, bool placed_piece){
     last_was_placed = placed_piece;
 }
 
-struct POS game_to_terminal_coord(struct POS pos){
-    struct POS new_pos = {pos.x + board_pos[0] + 1, (-pos.y) + board_pos[1] + 20};
+struct Pos game_to_terminal_coord(struct Pos pos){
+    struct Pos new_pos = {pos.x + board_pos[0] + 1, (-pos.y) + board_pos[1] + 20};
     return new_pos;
 }
 
