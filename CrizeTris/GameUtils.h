@@ -5,11 +5,12 @@
 #include <stdbool.h>
 
 
+
 enum pieces {
     empty = 0,
     I = 1,
-    O = 2,
-    T = 3,
+    T = 2,
+    O = 3,
     S = 4,
     Z = 5,
     J = 6,

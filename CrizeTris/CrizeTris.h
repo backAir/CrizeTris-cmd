@@ -20,10 +20,12 @@ typedef struct Pos{
 void CreateBoard(int width, int height, int buffer);
 void PlacePiece(int x, int y, int8_t piece, int rotation);
 bool CheckGameOver();
-void SpawnPiece();
+void SpawnPiece(bool new_piece);
 void StartGame();
 bool MovePiece(enum direction direction, bool hardDrop);
 int GameLoop(int16_t input);
 void RotatePiece(enum rotations rotation);
 int8_t* GetCurrBoard();
 void HardDrop();
+int GetCurrHold();
+int GetPiece();

@@ -1,33 +1,35 @@
 #include "Game.h"
 
-
 static int WIDTH;
 static int HEIGHT;
 static bool gameOver = false;
 static int score = 0;
 static char* map;
-int board_pos[] = {5,10};
 
+const int pieces_colors[] = {BLACK, CYAN, MAGENTA, YELLOW, GREEN, RED, BLUE, ORANGE};
+
+int board_pos[] = {6,10};
 
 int* last_piece_pos;
 
-
 int8_t* new_board;
 // Function to set the console font
-void SetConsoleFont(const wchar_t* fontName, int fontSize) {
+void SetConsoleFont(const wchar_t* fontName, int fontSizeX, int fontSizeY) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof(CONSOLE_FONT_INFOEX);
     cfi.nFont = 0;
-    cfi.dwFontSize.X = fontSize;
-    cfi.dwFontSize.Y = fontSize;
+    cfi.dwFontSize.X = fontSizeX; // Set the width of the font
+    cfi.dwFontSize.Y = fontSizeY; // Set the height of the font
     cfi.FontFamily = FF_DONTCARE;
     cfi.FontWeight = FW_NORMAL;
     wcscpy_s(cfi.FaceName, LF_FACESIZE, fontName);
     SetCurrentConsoleFontEx(hConsole, FALSE, &cfi);
 }
 
-
+int game_board_height = 20;
+int game_board_width = 10;
+int game_buffer = 20;
 
 void Setup(int width, int height){
     WIDTH = width;
@@ -36,32 +38,38 @@ void Setup(int width, int height){
     system("cls");
     SetWindowSize(width,height+1);
     ShowsCursor(false);
-    SetConsoleTitle("CrizeTris cmd");
+    SetConsoleTitle("QualityTris cmd");
 
     SetConsoleOutputCP(CP_UTF8);
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD dwMode = 0;
     dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleFont(L"Lucida Console", 16); //Consolas work too
+    SetConsoleFont(L"Lucida Console", 16, 16); //Consolas work too
 
     map = (char*)calloc(WIDTH * HEIGHT,sizeof(char));
     srand((unsigned)time(NULL));
     sPrint("Score: 0", 0, HEIGHT);
     
         // rand() % WIDTH;
-    int board_height = 20;
-    int board_width = 10;
-    int buffer = 20;
+
+
+
+    // sColoredPrint("█", board_pos[0]-5, board_pos[1], YELLOW);
+    // sColoredPrint("█", 2, board_pos[1], YELLOW);
+    // sColoredPrint("█", 3, board_pos[1], YELLOW);
+    // sColoredPrint("█", 4, board_pos[1], YELLOW);
+    
+
 
     for (size_t i = 0; i < width; i++)
     {
         for (size_t j = 0; j < height; j++)
         {
-            if((i==board_pos[0]||i==board_pos[0]+board_width+1)&&j>board_pos[1]&&j<board_pos[1]+board_height+2){
+            if((i==board_pos[0]||i==board_pos[0]+game_board_width+1)&&j>board_pos[1]&&j<board_pos[1]+game_board_height+2){
                 sColoredPrint("█", i, j, WHITE);
             }
 
-            if(j==board_pos[1]+1+board_height && (i>board_pos[0] && i<board_pos[0]+board_width+1)){
+            if(j==board_pos[1]+1+game_board_height && (i>board_pos[0] && i<board_pos[0]+game_board_width+1)){
                 sColoredPrint("█", i, j, WHITE);
             }
         }
@@ -71,9 +79,8 @@ void Setup(int width, int height){
     new_board = malloc(10*40*sizeof(int8_t));
 
     last_piece_pos = calloc(8,sizeof(int));
-    CreateBoard(board_width, board_height, buffer);
+    CreateBoard(game_board_width, game_board_height, game_buffer);
     StartGame();
-    SpawnPiece();
     int* piece_coords = GetCurrentPiecePos();
     PrintPiece(piece_coords,4,false);
 
@@ -134,6 +141,7 @@ KeyMapping keyMappings[] = {
     {VK_DOWN, KEY_DOWN},
     {VK_SPACE, KEY_HARDDROP},
     {'W', KEY_ROTATECCW},
+    {'Z', KEY_ROTATECCW},
     {'X', KEY_ROTATECW},
     {'C', KEY_HOLD},
     {'Q', KEY_180}
@@ -157,19 +165,57 @@ void Move(){
         gameOver = true;
     }
     int* piece_coords = GetCurrentPiecePos();
+    int piece = GetPiece();
     // if(!piece_was_placed){
     //     // PrintPiece(piece_coords,4,piece_was_placed);
     // }
     int8_t* board = GetCurrBoard();
+    int hold = GetCurrHold();
 
     memcpy(new_board, board, 10*40*sizeof(int8_t));
     for (size_t i = 0; i < 4; i++)
     {
-        new_board[piece_coords[i*2] + piece_coords[i*2 + 1] * 10] = 1;
+        new_board[piece_coords[i*2] + piece_coords[i*2 + 1] * 10] = piece;
     }
+
+    PrintHold(hold);
     PrintBoard(new_board, 10, 20, 20);
 }
 
+
+void PrintHold(int held_piece){
+    static int* old_hold = NULL;
+    static int old_piece = -1;
+    if(old_piece == held_piece){
+        return;
+    }
+    if (old_hold == NULL) {
+        old_hold = (int*)calloc(4 * 4, sizeof(int));
+    }else{
+        for (size_t i = 0; i < 4; i++)
+        {
+            sColoredPrint(" ", old_hold[i*2]-6, old_hold[i*2 + 1]-game_board_height+4, YELLOW);
+        }
+    }
+
+    
+    int* piece_coords = GetPiecePos(0,0,0,held_piece);
+    int* new_pos = game_to_terminal_coords(piece_coords, 4);
+    for (size_t i = 0; i < 4; i++)
+    {
+        if(old_hold[piece_coords[i*2] + piece_coords[i*2 + 1] * 4] != 1){
+            sColoredPrint("█", new_pos[i*2]-6, new_pos[i*2 + 1]-game_board_height+4, pieces_colors[held_piece]);
+        }
+    }
+
+    memcpy(old_hold, new_pos, 4 * 4 * sizeof(int));
+    free(new_pos);
+    
+    // clean up the board for where the old piece was but the new piece isn't
+
+
+    old_piece = held_piece;
+}
 
 int8_t* old_board = NULL;
 void PrintBoard(int8_t* board, int board_width, int board_height, int board_buffer){
@@ -189,9 +235,9 @@ void PrintBoard(int8_t* board, int board_width, int board_height, int board_buff
                 int pos[] = {i,j};
                 int* new_pos = game_to_terminal_coords(pos, 1); 
                 if(board[index] != 0){
-                    sColoredPrint("█", new_pos[0], new_pos[1], YELLOW);
+                    sColoredPrint("█", new_pos[0], new_pos[1], pieces_colors[board[index]]);
                 }else{
-                    sColoredPrint(" ", new_pos[0], new_pos[1], YELLOW);
+                    sColoredPrint(" ", new_pos[0], new_pos[1], BLACK);
                 }
                 free(new_pos);
             }

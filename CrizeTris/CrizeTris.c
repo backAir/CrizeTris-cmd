@@ -4,16 +4,21 @@
 #include <time.h>
 
 
+
 int8_t* board;
+//constants
 int board_width;
 int board_height;
+int piece_spawn[] = {4,20};
 
+//variables
 int current_piece;
 int current_bag[] = {[13] = 0};
 int bag_position = 0;
 int current_rotation = 0;
+int held_piece = -1;
+bool already_held = false;
 int piece_position[] = {0,0};
-
 
 
 void CreateBoard(int width, int height, int buffer){
@@ -36,6 +41,7 @@ void StartGame(){
     piece_position[1] = 0;
     GenerateBag(current_bag,0);
     GenerateBag(current_bag,7);
+    SpawnPiece(true);
 }
 
 const int DROP_INTERVAL = 500;
@@ -61,6 +67,19 @@ int GameLoop(int16_t input){
     }
     if(pressedInput & KEY_UP){
         RotatePiece(clockwise);
+    }
+
+    if(!already_held && (pressedInput & KEY_HOLD)){
+        if(held_piece == -1){
+            held_piece = current_piece;
+            SpawnPiece(true);
+        }else{
+            int temp = current_piece;
+            current_piece = held_piece;
+            held_piece = temp;
+            SpawnPiece(false);
+        }
+        already_held = true;
     }
 
     //todo: Maybe fix up ARR a bit ? idk
@@ -109,11 +128,13 @@ bool CheckGameOver(){
 }
 
 
-void SpawnPiece(){
-    current_piece = current_bag[0];
+void SpawnPiece(bool new_piece){
     current_rotation = 0;
-    piece_position[0] = 4;
-    piece_position[1] = 20;
+    piece_position[0] = piece_spawn[0];
+    piece_position[1] = piece_spawn[1];
+    if(!new_piece){return;}
+
+    current_piece = current_bag[0];
     bag_position++;
     for (size_t i = 0; i < 13; i++)
     {
@@ -123,6 +144,7 @@ void SpawnPiece(){
         GenerateBag(current_bag,7);
         bag_position=0;
     }
+    already_held = false;
 }
 
 void HardDrop(){
@@ -221,6 +243,9 @@ void RotatePiece(enum rotations rotation){
 int* GetCurrentPiecePos(){
     return GetPiecePos(piece_position[0],piece_position[1],current_rotation,current_piece);
 }
+int GetPiece(){
+    return current_piece;
+}
 
 void PlacePiece(int x, int y, int8_t piece, int rotation){
     int* piece_pos = GetPiecePos(x,y,rotation,piece);
@@ -231,10 +256,13 @@ void PlacePiece(int x, int y, int8_t piece, int rotation){
     free(piece_pos);
 
     ClearLines(board);
-    SpawnPiece();
+    SpawnPiece(true);
 }
 
 
 int8_t* GetCurrBoard(){
     return board;
+}
+int GetCurrHold(){
+    return held_piece;
 }
