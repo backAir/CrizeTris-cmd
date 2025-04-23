@@ -26,4 +26,7 @@ int* game_to_terminal_coords(int* pos, int amount_of_pos);
 Pos game_to_terminal_coord(struct Pos pos);
 void PrintBoard(int8_t* board, int board_width, int board_height, int board_buffer);
 void PrintHold(int held_piece);
+void PrintNext(int* next);
+static int* old_next;
+
 #endif

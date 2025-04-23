@@ -29,3 +29,4 @@ int8_t* GetCurrBoard();
 void HardDrop();
 int GetCurrHold();
 int GetPiece();
+int* GetCurrBag();

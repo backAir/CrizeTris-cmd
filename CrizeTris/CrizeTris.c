@@ -266,3 +266,6 @@ int8_t* GetCurrBoard(){
 int GetCurrHold(){
     return held_piece;
 }
+int* GetCurrBag(){
+    return current_bag;
+}

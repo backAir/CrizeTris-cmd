@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <stdlib.h>
 
 static int WIDTH;
 static int HEIGHT;
@@ -34,6 +35,9 @@ int game_buffer = 20;
 void Setup(int width, int height){
     WIDTH = width;
     HEIGHT = height;
+
+    old_next = (int*)calloc(4 * 4, sizeof(int));
+
     
     system("cls");
     SetWindowSize(width,height+1);
@@ -171,6 +175,7 @@ void Move(){
     // }
     int8_t* board = GetCurrBoard();
     int hold = GetCurrHold();
+    int* bag = GetCurrBag();
 
     memcpy(new_board, board, 10*40*sizeof(int8_t));
     for (size_t i = 0; i < 4; i++)
@@ -180,8 +185,58 @@ void Move(){
 
     PrintHold(hold);
     PrintBoard(new_board, 10, 20, 20);
+    PrintNext(bag);
 }
 
+void PrintNext(int* next){
+    static int** old_next_pos = NULL;
+    static int* old_next = NULL;
+    static int next_count = 4;
+    static int h_offset; //horizontal offset
+    if (old_next_pos == NULL) {
+        old_next = malloc(sizeof(int)*next_count);
+        old_next = calloc(next_count,sizeof(int));
+
+        h_offset = 2+game_board_width;
+        old_next_pos = malloc(next_count *  sizeof(int*));
+        for (size_t i = 0; i < next_count; i++)
+        {
+            old_next_pos[i] = calloc(4 * 4, sizeof(int));
+        }
+        return;
+    } else {
+        for (size_t i = 0; i < next_count; i++)
+        {
+            if (old_next[i] == next[i]){continue;}
+            for (size_t j = 0; j < 4; j++)
+            {
+                sColoredPrint(" ", old_next_pos[i][j*2]+h_offset, old_next_pos[i][j*2 + 1]-game_board_height+4 + 4*i, YELLOW);
+            }
+        }
+    }
+
+
+    int** new_pos = malloc(sizeof(int*)*next_count);
+    for (size_t i = 0; i < next_count; i++)
+    {
+        if (old_next[i] == next[i]){continue;}
+        int* piece_coords = GetPiecePos(0,0,0,next[i]);
+        new_pos[i] = game_to_terminal_coords(piece_coords, 4);
+        for (size_t j = 0; j < 4; j++)
+        {
+            if(old_next_pos[i][piece_coords[j*2] + piece_coords[j*2 + 1] * 4] != 1){
+                sColoredPrint("█", new_pos[i][j*2]+ h_offset, new_pos[i][j*2 + 1]-game_board_height+4 +4*i, pieces_colors[next[i]]);
+                // sColoredPrint("█", new_pos[i][j*2]+ h_offset, new_pos[i][j*2 + 1]-game_board_height+4 -4*i, pieces_colors[next[0]]);
+            }
+        }
+
+
+        memcpy(old_next_pos[i], new_pos[i], 4 * 4 * sizeof(int));
+        free(new_pos[i]);
+        // return;
+    }
+    free(new_pos);
+}
 
 void PrintHold(int held_piece){
     static int* old_hold = NULL;
@@ -197,7 +252,6 @@ void PrintHold(int held_piece){
             sColoredPrint(" ", old_hold[i*2]-6, old_hold[i*2 + 1]-game_board_height+4, YELLOW);
         }
     }
-
     
     int* piece_coords = GetPiecePos(0,0,0,held_piece);
     int* new_pos = game_to_terminal_coords(piece_coords, 4);
