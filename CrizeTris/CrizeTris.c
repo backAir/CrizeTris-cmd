@@ -209,6 +209,10 @@ void RotatePiece(enum rotations rotation){
             kick_table_index = current_rotation-1;  
             if(kick_table_index < 0){kick_table_index = 3;}
             break;
+        default:
+            fprintf(stderr, "Unhandled rotation case in RotatePiece\n");
+            exit(EXIT_FAILURE);
+            return;
     }
     bool legal = IsLegalPosition(piece_position[0],piece_position[1],current_piece,new_rotation, board, board_width);
     if(legal){

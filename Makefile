@@ -7,7 +7,7 @@ make:
 
 debug:
 	@make build-debug
-	@make run
+	gdb build/QualityTris
 
 build:
 	gcc ./main.c ./game.c ./external.c ./CrizeTris/CrizeTris.c ./CrizeTris/Pieces.c ./CrizeTris/GameUtils.c ./CrizeTris/KickTable.c -o build/QualityTris
@@ -20,7 +20,7 @@ smalldeep:
 	gcc -Os -s -mwindows -ffunction-sections -fdata-sections -Wl,--gc-sections -fno-stack-protector ./main.c ./game.c ./external.c ./CrizeTris/CrizeTris.c ./CrizeTris/Pieces.c ./CrizeTris/GameUtils.c ./CrizeTris/KickTable.c -o build/QualityTrisSmol2.exe
 
 build-debug:
-	gcc -g ./main.c ./game.c ./external.c ./CrizeTris/CrizeTris.c ./CrizeTris/Pieces.c ./CrizeTris/GameUtils.c ./CrizeTris/KickTable.c -o build/QualityTris
+	gcc -g3 -Og -Wall -fno-omit-frame-pointer ./main.c ./game.c ./external.c ./CrizeTris/CrizeTris.c ./CrizeTris/Pieces.c ./CrizeTris/GameUtils.c ./CrizeTris/KickTable.c -o build/QualityTris
 
 run:
 	cmd /c build\QualityTris.exe

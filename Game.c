@@ -36,7 +36,7 @@ void Setup(int width, int height){
     WIDTH = width;
     HEIGHT = height;
 
-    old_next = (int*)calloc(4 * 4, sizeof(int));
+    // old_next = (int*)calloc(4 * 4, sizeof(int));
 
     
     system("cls");
@@ -45,13 +45,14 @@ void Setup(int width, int height){
     SetConsoleTitle("QualityTris cmd");
 
     SetConsoleOutputCP(CP_UTF8);
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD dwMode = 0;
     dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
     SetConsoleFont(L"Lucida Console", 16, 16); //Consolas work too
 
     map = (char*)calloc(WIDTH * HEIGHT,sizeof(char));
-    srand((unsigned)time(NULL));
+    srand(0);
+    // srand((unsigned)time(NULL));
     sPrint("Score: 0", 0, HEIGHT);
     
         // rand() % WIDTH;
@@ -79,7 +80,7 @@ void Setup(int width, int height){
         }
     }
 
-    srand(time(NULL));
+    // srand(time(NULL));
     new_board = malloc(10*40*sizeof(int8_t));
 
     last_piece_pos = calloc(8,sizeof(int));
@@ -194,7 +195,7 @@ void PrintNext(int* next){
     static int next_count = 4;
     static int h_offset; //horizontal offset
     if (old_next_pos == NULL) {
-        old_next = malloc(sizeof(int)*next_count);
+        // old_next = malloc(sizeof(int)*next_count);
         old_next = calloc(next_count,sizeof(int));
 
         h_offset = 2+game_board_width;

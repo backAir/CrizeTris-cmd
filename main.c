@@ -14,11 +14,11 @@ int main(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     // int i = time(NULL);
-    
     // free(bag);
     Setup(70,40);
     Play();
     getch();
+    // srand(0);
     return 0;
 }
 
